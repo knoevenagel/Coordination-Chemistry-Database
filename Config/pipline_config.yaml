@@ -1,0 +1,43 @@
+# config.yaml
+
+# 输入输出路径相关
+paths:
+  pubchem_data_path: /Users/weilinzou/Code/DatabaseProject/project_data/PubchemTestData
+  pubchem_table_sample: /Users/weilinzou/Code/DatabaseProject/ChemDB/Resources/pubchem_sample.csv
+  metal_list_path: /Users/weilinzou/Code/DatabaseProject/ChemDB/Resources/metal_list.txt
+  output_dir: /path/to/output/
+  log_file: /path/to/logs/process.log
+  temp_dir: /path/to/tmp/
+
+# 数据库配置
+database:
+  mysql_config_path: /Users/weilinzou/Code/DatabaseProject/ChemDB/Config/mysql_config.json
+  pubchem_table_name: PubChemRawData
+  coordinate_compound_table_name: ComplexRawData
+  ligand_table_name: LigandRawData
+
+  neo4j_config_path: /Users/weilinzou/Code/DatabaseProject/ChemDB/Config/neo4j_config.json
+# 文件命名规则
+naming:
+  use_timestamp: true
+  file_prefix: result_
+  file_suffix: .csv
+
+# 处理参数
+processing:
+  batch_size: 1000
+  enable_parallel: true
+  num_workers: 8
+  retry_failed: true
+
+# 日志设置
+logging:
+  level: INFO         # DEBUG / INFO / WARNING / ERROR
+  to_console: true
+  to_file: true
+
+# 环境设置
+env:
+  seed: 42
+  device: cpu         # or 'cuda'
+  dry_run: false      # 如果为 true，表示只做流程模拟，不执行实际操作

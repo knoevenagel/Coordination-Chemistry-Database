@@ -1,0 +1,9 @@
+{
+    "database": {
+      "host": "127.0.0.1",
+      "user": "weilin",
+      "password": "zwl020115",
+      "database": "ChemDB"
+    }
+  }
+  

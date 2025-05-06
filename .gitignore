@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.zip
+*.rar
+__MACOSX/
+.DS_Store
