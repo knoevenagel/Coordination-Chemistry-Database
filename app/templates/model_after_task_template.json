@@ -1,0 +1,9 @@
+{
+  "task_id": "demo_rank_001",
+  "metal": "Pd",
+  "embedding": "ecfp",
+  "candidate_file": "candidates.csv",
+  "positive_file": "positives.csv",
+  "negative_file": "negatives.csv",
+  "notes": ""
+}

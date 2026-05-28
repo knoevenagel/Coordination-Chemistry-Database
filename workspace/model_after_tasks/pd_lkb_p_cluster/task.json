@@ -1,0 +1,9 @@
+{
+  "task_id": "pd_lkb_p_cluster",
+  "metal": "Pd",
+  "embedding": "ecfp",
+  "candidate_file": "candidates.csv",
+  "positive_file": "positives.csv",
+  "negative_file": "negatives.csv",
+  "notes": "Converted from ChemDB_restructured legacy quest pd_lkb_p_cluster.csv"
+}

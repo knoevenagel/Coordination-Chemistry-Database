@@ -1,0 +1,18 @@
+# Phase 1B: generated 1% PubChem subset (large CSVs)
+integration_data/pubchem_1pct/*.csv
+integration_data/pubchem_1pct/**/*.csv
+
+# Pytest
+.pytest_cache/
+
+# Local integration runs (optional)
+workspace/projects/**/runs/*
+workspace/model_after_results/**
+!workspace/model_after_results/.gitkeep
+!workspace/.gitkeep
+!workspace/projects/**/.gitkeep
+!workspace/model_after_tasks/**
+
+__pycache__/
+*.pyc
+*.pyo

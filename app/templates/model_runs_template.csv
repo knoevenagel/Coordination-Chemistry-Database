@@ -1,0 +1,3 @@
+model_id,model_run_root,checkpoint_path,model_name,notes
+run_a,/path/to/run_a,,Run A,
+run_b,/path/to/run_b,,Run B,

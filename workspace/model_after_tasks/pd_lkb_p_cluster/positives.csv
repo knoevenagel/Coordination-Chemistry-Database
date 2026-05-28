@@ -1,0 +1,11 @@
+positive_id,smiles,did,name,source
+16,P(C(C)(C)C)(C(C)(C)C)C(C)(C)C,,quest_16,legacy_quest
+41,P(C(C)(C)C)(C(C)(C)C)CC(C),,quest_41,legacy_quest
+42,P(C(C)(C)C)(C(C)(C)C)[CH2]C(C)(C)C,,quest_42,legacy_quest
+43,P(C(C)(C)C)(C(C)(C)C)C1CCCCC1,,quest_43,legacy_quest
+45,P(C(C)(C)C)(C(C)(C)C)C12CC3CC(C1)CC(C3)C2,,quest_45,legacy_quest
+54,P(C12CC3CC(C1)CC(C3)C2)(C12CC3CC(C1)CC(C3)C2)CCCC,,quest_54,legacy_quest
+55,P(C12CC3CC(C1)CC(C3)C2)(C12CC3CC(C1)CC(C3)C2)C(C)(C)C,,quest_55,legacy_quest
+113,CC(C)(C)P(c1ccccc1)C(C)(C)C,,quest_113,legacy_quest
+142,CC(C)(P1C(CC(CC1C)=O)C)C,,quest_142,legacy_quest
+143,CC(P(C(C)(C)C1)c2ccccc2)(C)CC1=O,,quest_143,legacy_quest

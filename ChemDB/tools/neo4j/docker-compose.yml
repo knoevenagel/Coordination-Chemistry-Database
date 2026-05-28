@@ -1,0 +1,20 @@
+services:
+  neo4j:
+    image: neo4j:2025.07
+    container_name: neo4j
+    restart: on-failure
+    ports:
+      - "3074:7474"   # Web UI http://localhost:7474
+      - "3087:7687"   # Bolt protocol (driver/Neovis.js)
+    environment:
+      - NEO4J_AUTH=neo4j/testtest123      # Default username and password
+      - NEO4J_server_memory_heap_initial__size=512m
+      - NEO4J_server_memory_heap_max__size=4G
+      - NEO4J_server_memory_pagecache_size=4G
+      # If you need to force Bolt TLS, you can enable:
+      # - NEO4J_dbms_connector_bolt_tls__level=REQUIRED
+    volumes:
+      - ./neo4j/data:/data        # Data persistence
+      - ./neo4j/logs:/logs
+      - ./neo4j/conf:/conf        # Optional, modify configuration
+      - ./neo4j/import:/import    # CSV import directory

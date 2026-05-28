@@ -1,0 +1,29 @@
+# Per-run training config (Phase 1C). Path fields are absolute; filled by training_manager.
+data:
+  training_dir: "{training_dir}"
+  index_path: "{index_path}"
+  embedding: ecfp
+  batch_size: {batch_size}
+  max_candidates: 161
+  num_workers: 0
+  seed: 42
+
+model:
+  d_m: null
+  d_l: null
+  activation: gelu
+  dropout: 0.1
+
+train:
+  epochs: {epochs}
+  lr: 1.0e-3
+  weight_decay: 0.0
+  optimizer: adamw
+  scheduler: {scheduler}
+  scheduler_patience: 3
+  scheduler_factor: 0.5
+  ckpt_dir: "{ckpt_dir}"
+  ckpt_best_metric: recall_at_1
+  early_stop_patience: {early_stop_patience}
+  val_every: 1
+  device: {device}

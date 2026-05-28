@@ -1,0 +1,9 @@
+{
+  "task_id": "ni_lkb_p_ni",
+  "metal": "Ni",
+  "embedding": "ecfp",
+  "candidate_file": "candidates.csv",
+  "positive_file": "positives.csv",
+  "negative_file": "",
+  "notes": "Converted from ChemDB_restructured legacy quest ni_lkb_p_ni.csv (344 candidates, 11 positives, no explicit negatives)."
+}

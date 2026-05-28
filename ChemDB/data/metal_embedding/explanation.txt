@@ -1,0 +1,43 @@
+lattice_structure 编码（0-based）
+========================================
+  0 -> BCC
+  1 -> CUB
+  2 -> DIA
+  3 -> FCC
+  4 -> HEX
+  5 -> MCL
+  6 -> ORC
+  7 -> RHL
+  8 -> SC
+  9 -> TET
+  10 -> (缺失/null)
+
+
+element_features.csv 取值标准（oxistates / ionic_radius / coordination）
+========================================================================
+数据来源：element_oxistates_ionic_radii.csv。coordination 为阿拉伯数字（如 VI→6，IV/IVSQ 等→4）。
+
+oxistate 列为纯数值：若采用多种氧化态（离子半径取平均），则 oxistate 取这些氧化态的算术平均。
+  例如 2 与 4 价取平均时，oxistate = 3；(2+3)/2 → 2.5，(3+4)/2 → 3.5，(3+5)/2 → 4。
+
+- Cr：采用 3 价离子（oxistate=3，ionic_radius=61.5 pm，CN=6）。
+- Mn：2 与 4 价离子半径平均（68 pm），oxistate=3，CN=6。
+- Fe、Co、Ni：2 与 3 价离子半径平均（Fe 71.25、Co 64.5、Ni 仅 2 价 69），oxistate=2.5（Ni 为 2），CN=6。
+- Ge：4 价（oxistate=4，ionic_radius=53.0 pm，CN=6）。
+- Mo：6 价（oxistate=6，ionic_radius=59.0 pm，CN=6）。
+- Tc：7 价（oxistate=7，ionic_radius=56.0 pm，CN=6）。
+- Ru：3 与 4 价离子半径平均（65 pm），oxistate=3.5，CN=6。
+- Pd：2 与 4 价离子半径平均（73.75 pm），oxistate=3，CN=6。
+- Sn：2 与 4 价（2 价无半径时仅用 4 价 69 pm），oxistate=3，CN=6。
+- Sb：3 与 5 价离子半径平均（68 pm），oxistate=4，CN=6。
+- Ce：3 与 4 价离子半径平均（94 pm），oxistate=3.5，CN=6。
+- Eu：2 与 3 价离子半径平均（105.85 pm），oxistate=2.5，CN=6。
+- Ir：3 与 4 价离子半径平均（65.25 pm），oxistate=3.5，CN=6。
+- Pt：2 与 4 价离子半径平均（71.25 pm），oxistate=3，CN=6。
+- Hg：2 价（oxistate=2，ionic_radius=102.0 pm，CN=6）。
+- Tl：3 价（oxistate=3，ionic_radius=88.5 pm，CN=6）。
+- Pb：2 与 4 价离子半径平均（98.25 pm），oxistate=3，CN=6。
+- Po：2 与 4 价（2 价无半径时仅用 4 价 94 pm），oxistate=3，CN=6。
+- W：4 与 6 价时取平均则 oxistate=5（表中若为多价则按此规则取数值平均）。
+
+其他元素：按 element_oxistates_ionic_radii.csv 中对应氧化态与配位数选取；多种离子时优先 most_reliable=True，否则取平均或唯一可用值；配位数为罗马数字时转为阿拉伯数字。oxistate 一律存为纯数值（多价时为各价态算术平均）。

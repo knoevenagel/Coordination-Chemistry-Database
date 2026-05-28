@@ -1,0 +1,30 @@
+{
+  "run_root": "{run_root}",
+  "samples_csv": "{samples_csv}",
+  "m_l3_pairs": "{m_l3_pairs}",
+  "l3_gac": "{l3_gac}",
+  "m_l3_pairs_path": "{m_l3_pairs}",
+  "kl_nl_ul_index": {
+    "path": "{samples_csv}",
+    "format": "csv"
+  },
+  "ligand_embedding": {
+    "backend": "ecfp",
+    "mode": null,
+    "path": "{ligand_embedding_path}",
+    "dir": "{ligand_embedding_dir}",
+    "format": "npz",
+    "variants": {
+      "ecfp": {
+        "path": "{ligand_embedding_path}",
+        "file": "L3_embedding_ecfp.npz"
+      }
+    },
+    "npz_keys": ["dids", "smiles", "embeddings"]
+  },
+  "metal_embedding": {
+    "path": "{metal_embedding_path}",
+    "format": "csv",
+    "lookup_column": "element"
+  }
+}

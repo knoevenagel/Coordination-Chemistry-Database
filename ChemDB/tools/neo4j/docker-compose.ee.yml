@@ -1,0 +1,8 @@
+services:
+  neo4j:
+    image: neo4j:2025.09-enterprise
+    environment:
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+    volumes:
+      - ./neo4j/neo4j.license:/var/lib/neo4j/licenses/neo4j.license
+
