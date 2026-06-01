@@ -5,12 +5,14 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import shlex
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from .model_after_paths import default_output_dir
+from . import job_manager
 
 CHEMDB_ROOT = Path(__file__).resolve().parents[2] / "ChemDB"
 
@@ -25,6 +27,158 @@ def _write_manifest(path: Path, payload: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
+
+
+def _quote(parts: List[str]) -> str:
+    return " ".join(shlex.quote(p) for p in parts)
+
+
+def _batch_id_default(prefix: str = "batch") -> str:
+    return f"{prefix}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+
+
+def create_model_runs_file(
+    *,
+    workspace_root: str | Path,
+    task_id: str,
+    models: List[Dict[str, Any]],
+    batch_id: str,
+) -> Path:
+    ws = Path(workspace_root).resolve()
+    out = ws / "model_after_results" / task_id / batch_id / "_inputs"
+    out.mkdir(parents=True, exist_ok=True)
+    path = out / "model_runs.csv"
+    lines = ["model_id,model_run_root,checkpoint_path,model_name,notes"]
+    for row in models:
+        mid = str(row.get("model_id") or "")
+        project_id = str(row.get("project_id") or "")
+        run_id = str(row.get("run_id") or "")
+        run_root = str((ws / "projects" / project_id / "runs" / run_id).resolve())
+        ckpt = str(row.get("checkpoint_path") or "")
+        model_name = str(row.get("checkpoint_stem") or mid)
+        lines.append(f"{mid},{run_root},{ckpt},{model_name},")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+def submit_evaluate_models_job(
+    *,
+    db_path: str | Path,
+    workspace_root: str | Path,
+    task_id: str,
+    models: List[Dict[str, Any]],
+    batch_id: Optional[str] = None,
+    device: str = "cpu",
+) -> Dict[str, Any]:
+    if not models:
+        raise ValueError("no models selected")
+    ws = Path(workspace_root).resolve()
+    bid = batch_id or _batch_id_default("batch")
+    task_dir = ws / "model_after_tasks" / task_id
+    if not task_dir.is_dir():
+        raise FileNotFoundError(f"task directory not found: {task_dir}")
+    output_dir = ws / "model_after_results" / task_id / bid
+    model_runs_file = create_model_runs_file(workspace_root=ws, task_id=task_id, models=models, batch_id=bid)
+
+    eval_cmd = [
+        sys.executable,
+        "-m",
+        "app.services.model_after_manager",
+        "evaluate-models",
+        "--model-runs-file",
+        str(model_runs_file),
+        "--task-dir",
+        str(task_dir),
+        "--output-dir",
+        str(output_dir),
+        "--device",
+        device,
+        "--batch-id",
+        bid,
+    ]
+    rebuild_cmd = [
+        sys.executable,
+        "-m",
+        "app.storage.cli",
+        "rebuild-index",
+        "--workspace-root",
+        str(ws),
+        "--db-path",
+        str(Path(db_path).resolve()),
+    ]
+    command = ["bash", "-lc", f"{_quote(eval_cmd)} && {_quote(rebuild_cmd)}"]
+    job = job_manager.launch_subprocess_job_async(
+        db_path,
+        job_type="evaluate_models",
+        title=f"Evaluate models for task {task_id}/{bid}",
+        command=command,
+        workspace_root=ws,
+        task_id=task_id,
+        batch_id=bid,
+        cwd=ws,
+    )
+    return {
+        "job": job,
+        "task_id": task_id,
+        "batch_id": bid,
+        "output_dir": str(output_dir.resolve()),
+        "model_runs_file": str(model_runs_file.resolve()),
+    }
+
+
+def submit_recommend_job(
+    *,
+    db_path: str | Path,
+    workspace_root: str | Path,
+    task_dir: str | Path,
+    model_run_root: str | Path,
+    model_id: Optional[str] = None,
+    batch_id: Optional[str] = None,
+    device: str = "cpu",
+) -> Dict[str, Any]:
+    ws = Path(workspace_root).resolve()
+    task_dir_p = Path(task_dir).resolve()
+    if not task_dir_p.is_dir():
+        raise FileNotFoundError(f"task directory not found: {task_dir_p}")
+    model_run_root_p = Path(model_run_root).resolve()
+    bid = batch_id or _batch_id_default("recommend")
+    output_dir = ws / "recommendation_results" / task_dir_p.name / bid
+    rec_cmd = [
+        sys.executable,
+        "-m",
+        "app.services.model_after_manager",
+        "recommend",
+        "--model-run-root",
+        str(model_run_root_p),
+        "--task-dir",
+        str(task_dir_p),
+        "--output-dir",
+        str(output_dir),
+        "--device",
+        device,
+        "--batch-id",
+        bid,
+    ]
+    if model_id:
+        rec_cmd.extend(["--model-id", model_id])
+    command = ["bash", "-lc", _quote(rec_cmd)]
+    job = job_manager.launch_subprocess_job_async(
+        db_path,
+        job_type="recommend",
+        title=f"Recommend {task_dir_p.name}/{bid}",
+        command=command,
+        workspace_root=ws,
+        task_id=task_dir_p.name,
+        batch_id=bid,
+        model_id=model_id,
+        cwd=ws,
+    )
+    return {
+        "job": job,
+        "task_dir": str(task_dir_p),
+        "batch_id": bid,
+        "output_dir": str(output_dir.resolve()),
+    }
 
 
 def _resolve_output(

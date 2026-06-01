@@ -1,0 +1,4 @@
+
+# worker_start: 2026-06-01T03:11:05.213568+00:00
+INFO recommend model_run_root=/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1 task_dir=/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/model_after_tasks/ni_lkb_p_ni output_dir=/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/recommendation_results/ni_lkb_p_ni/recommend_20260601T031105Z
+INFO ranking: /home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/recommendation_results/ni_lkb_p_ni/recommend_20260601T031105Z/ranking.csv

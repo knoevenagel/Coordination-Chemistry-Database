@@ -1,0 +1,17 @@
+{
+  "ga_set_id": "ga_adam_pi",
+  "ga_version_id": "v001",
+  "parent_version_id": null,
+  "created_at": "2026-05-31T12:03:53.588693+00:00",
+  "created_by": "ga_registry_manager",
+  "source": {
+    "type": "upload"
+  },
+  "num_ga": 680,
+  "checksum": "sha256:1ca7d665b78e0173a39be94dc79b1e33be926be9c8bae2214243ff51fbab9405",
+  "notes": "create-ga-version-from-upload",
+  "columns": [
+    "GA_SMILES",
+    "GA_ID"
+  ]
+}

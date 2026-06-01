@@ -1,0 +1,26 @@
+{
+  "command": "recommend",
+  "status": "success",
+  "model_run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "task_dir": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/model_after_tasks/ni_lkb_p_ni",
+  "output_dir": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/recommendation_results/ni_lkb_p_ni/recommend_20260601T031105Z",
+  "device": "cpu",
+  "finished_at": "2026-06-01T03:11:14.690552+00:00",
+  "report": {
+    "status": "success",
+    "context_source": "positives_mean",
+    "task_id": "ni_lkb_p_ni",
+    "metal": "Ni",
+    "model_id": "adam-pi_1_best",
+    "model_run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+    "checkpoint_path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/ckpts/best.pt",
+    "device": "cpu",
+    "output_dir": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/recommendation_results/ni_lkb_p_ni/recommend_20260601T031105Z",
+    "ranking_path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/recommendation_results/ni_lkb_p_ni/recommend_20260601T031105Z/ranking.csv",
+    "n_candidates": 344,
+    "n_valid_candidates": 344,
+    "n_invalid_candidates": 0,
+    "positive_embedding_errors": [],
+    "invalid_candidates": []
+  }
+}

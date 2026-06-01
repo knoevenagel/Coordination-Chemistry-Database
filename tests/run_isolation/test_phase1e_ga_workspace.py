@@ -91,6 +91,38 @@ def test_bind_materializes_snapshot(ga_workspace, tmp_path):
     assert (ctx.manifest_dir / "ga_binding.json").is_file()
 
 
+def test_bind_respects_explicit_workspace_root(tmp_path):
+    pytest.importorskip("rdkit")
+    ga_set_id = "fixture_run_demo"
+    ga_version_id = "v001"
+    ws_a = tmp_path / "workspace_a"
+    ws_b = tmp_path / "workspace_b"
+    for ws, gid in ((ws_a, "G111111"), (ws_b, "G222222")):
+        vdir = ws / "ga_sets" / ga_set_id / "versions" / ga_version_id
+        vdir.mkdir(parents=True)
+        (vdir / "GA_with_id.csv").write_text(
+            f"GA_SMILES,GA_ID\nc1ccccc1,{gid}\n",
+            encoding="utf-8",
+        )
+    ctx = _ctx_with_repaired(tmp_path / "run")
+    binding = grm.bind_ga_version_to_run(
+        ctx.run_root,
+        ga_set_id,
+        ga_version_id,
+        workspace_root=ws_b,
+    )
+    mat = ctx.tmp_dir / "GA_with_id.csv"
+    src_a = ws_a / "ga_sets" / ga_set_id / "versions" / ga_version_id / "GA_with_id.csv"
+    src_b = ws_b / "ga_sets" / ga_set_id / "versions" / ga_version_id / "GA_with_id.csv"
+    assert grm.ga_csv_checksum(mat)[0] == grm.ga_csv_checksum(src_b)[0]
+    assert grm.ga_csv_checksum(mat)[0] != grm.ga_csv_checksum(src_a)[0]
+    assert "G222222" in mat.read_text(encoding="utf-8")
+    assert "G111111" not in mat.read_text(encoding="utf-8")
+    binding_json = json.loads((ctx.manifest_dir / "ga_binding.json").read_text(encoding="utf-8"))
+    assert binding_json["source_ga_csv"] == str(src_b.resolve())
+    assert binding["source_ga_csv"] == str(src_b.resolve())
+
+
 def test_two_runs_same_version_independent_snapshots(ga_workspace, tmp_path):
     ctx_a = _ctx_with_repaired(tmp_path / "a")
     ctx_b = _ctx_with_repaired(tmp_path / "b")

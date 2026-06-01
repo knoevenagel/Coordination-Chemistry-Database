@@ -14,6 +14,16 @@
 | [phase_1abc_overall_assessment.md](./phase_1abc_overall_assessment.md) | **整体评估** | Phase 1A–1C 审计、run_demo 产物、模型后现状与 Phase 1D/2/3 建议 |
 | [phase_1d_plan.md](./phase_1d_plan.md) | 实施计划 | Phase 1D：model-after run-based wrapper |
 | [phase_1d_implementation.md](./phase_1d_implementation.md) | **实施记录** | Phase 1D：加载/打分/评估/多模型选择、CLI 与测试 |
+| [phase_2_readiness_after_ga_workspace.md](./phase_2_readiness_after_ga_workspace.md) | **评估** | Phase 2 就绪审计（post Phase 1E） |
+| [phase_2a_implementation.md](./phase_2a_implementation.md) | **实施记录** | Phase 2A：SQLite read-only registry + ingest CLI |
+| [phase_2a_validation_output.md](./phase_2a_validation_output.md) | 验证输出 | Phase 2A `rebuild-index` 对真实 workspace 的完整终端记录 |
+| [phase_2a_bound_ga_validation_output.md](./phase_2a_bound_ga_validation_output.md) | 验证输出 | Phase 2A bound-GA run + 复制 workspace 验证 |
+| [frontend.md](./frontend.md) | 设计草案 | Phase 3 resource-centric 前端总体设计 |
+| [phase_3a_readiness_audit.md](./phase_3a_readiness_audit.md) | **评估** | Phase 3A：只读 Streamlit dashboard 就绪审计 |
+| [phase_3a_implementation.md](./phase_3a_implementation.md) | **实施记录** | Phase 3A：只读 Streamlit dashboard 落地、测试与验收 |
+| [phase_3a_end_to_end_dataflow.md](./phase_3a_end_to_end_dataflow.md) | 架构说明 | 从原始数据到 SQLite ingest 再到网页展示的完整脚本/文件依赖链路 |
+| [phase_3b_readiness_audit.md](./phase_3b_readiness_audit.md) | **评估** | Phase 3B：MVP 可写化与异步执行就绪审计 |
+| [phase_3b_implementation.md](./phase_3b_implementation.md) | **实施记录** | Phase 3B：GA/Task 上传、Jobs、Model Builder、Selector、Recommendation、Hyperparameters |
 
 ## 阶段路线图（简）
 
@@ -23,20 +33,25 @@
 | Phase 1B | integration 数据集 + 真实 step 测试 |
 | Phase 1C | ECFP embedding + per-run training/index/config/data/train（见 phase_1c_implementation.md） |
 | Phase 1D | model-after：加载/打分/评估/多 model_run 对比（见 phase_1d_implementation.md） |
-| 之后 | SQLite、Streamlit 等 |
+| Phase 1E | workspace GA sets + run binding（见 phase_1e_implementation.md） |
+| Phase 2A | SQLite read-only registry + ingest CLI（见 phase_2a_implementation.md） |
+| Phase 3A | 只读 Streamlit dashboard（见 phase_3a_readiness_audit.md、phase_3a_implementation.md、frontend.md） |
+| Phase 3B | MVP 可写化 + 异步作业 + 推荐 + 超参数资源库 |
+| 之后 | 可选并发隔离、任务调度增强、`--write-db` hook 等 |
 
 ## 后续步骤如何记档（约定）
 
-1. **新阶段**：新增 `phase_<id>_implementation.md`（或 `changelog_YYYY-MM-DD_<topic>.md`），在本文「文档索引」表中补一行。
-2. **每条记录建议包含**：
+1. **默认流程（从现在开始）**：每个阶段至少维护两份文档：`phase_<id>_readiness_audit.md`（阶段开始前审计）+ `phase_<id>_implementation.md`（阶段完成后实现记录），并在本文「文档索引」补齐链接。
+2. **新阶段**：新增实施记录（`phase_<id>_implementation.md`，或 `changelog_YYYY-MM-DD_<topic>.md`）。
+3. **每条记录建议包含**：
    - 日期、阶段 ID、关联需求/对话要点
    - **目标**与**不在范围内**的事项
    - **目录/命名**变更（若有）
    - **新增文件**与**修改文件**列表（路径 + 一行说明）
    - **行为变更**（CLI、默认路径、测试策略）
    - **验收**：命令、通过条件、已知限制
-3. **评估文档**：`initial_assessment.md` 仅在基线事实变化时修订；阶段结论写在对应 `phase_*` 文档，避免单文件无限膨胀。
-4. **与代码同步**：`ChemDB`、`app/services`、`tests/`、`pytest.ini` 中的路径名以 **`ChemDB`** 为准；勿再引入 `ChemDB_run_based` 作为默认名。
+4. **评估文档**：`initial_assessment.md` 仅在基线事实变化时修订；阶段结论写在对应 `phase_*` 文档，避免单文件无限膨胀。
+5. **与代码同步**：`ChemDB`、`app/services`、`tests/`、`pytest.ini` 中的路径名以 **`ChemDB`** 为准；勿再引入 `ChemDB_run_based` 作为默认名。
 
 ## 测试
 

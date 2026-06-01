@@ -1,0 +1,492 @@
+
+# worker_start: 2026-05-31T12:05:33.030020+00:00
+Initialized run at /home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1
+{
+  "run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "ga_set_id": "ga_adam_pi",
+  "ga_version_id": "v001",
+  "source_ga_csv": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/ga_sets/ga_adam_pi/versions/v001/GA_with_id.csv",
+  "materialized_path": "tmp/GA_with_id.csv",
+  "checksum": "sha256:1ca7d665b78e0173a39be94dc79b1e33be926be9c8bae2214243ff51fbab9405",
+  "num_ga": 680,
+  "bound_at": "2026-05-31T12:05:35.449574+00:00",
+  "bound_by": "ga_registry_manager",
+  "status": "bound"
+}
+{
+  "action": "run-pipeline",
+  "pipeline": "core",
+  "through": "step13",
+  "run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "ok": true,
+  "steps": [
+    {
+      "step_id": "step1",
+      "status": "success",
+      "manifest": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/manifests/step1.json"
+    },
+    {
+      "step_id": "step2",
+      "status": "success",
+      "manifest": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/manifests/step2.json"
+    },
+    {
+      "step_id": "require_bound_ga",
+      "status": "success",
+      "manifest": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/manifests/require_bound_ga.json"
+    },
+    {
+      "step_id": "apply_ga_to_run",
+      "status": "success",
+      "manifest": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/manifests/apply_ga_to_run.json"
+    },
+    {
+      "step_id": "step6_7",
+      "status": "success",
+      "manifest": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/manifests/step6_7.json"
+    },
+    {
+      "step_id": "step8",
+      "status": "success",
+      "manifest": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/manifests/step8.json"
+    },
+    {
+      "step_id": "step12",
+      "status": "success",
+      "manifest": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/manifests/step12.json"
+    },
+    {
+      "step_id": "step13",
+      "status": "success",
+      "manifest": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/manifests/step13.json"
+    }
+  ],
+  "finished_at": "2026-05-31T14:35:22.325556+00:00"
+}
+{
+  "step_id": "build_l3_embedding_ecfp",
+  "status": "success",
+  "started_at": "2026-05-31T14:35:22.382841+00:00",
+  "run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "cwd": "/home/chenghua/ZhuoLi/ChemDBWebVersion/ChemDB",
+  "input_check": {
+    "ok": true,
+    "missing": [],
+    "checked": [
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/repaired_ligand_data.csv",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/metal_l3_index.csv"
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/repaired_ligand_data.csv",
+      "exists": true,
+      "size_bytes": 445488695
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/metal_l3_index.csv",
+      "exists": true,
+      "size_bytes": 34164398
+    }
+  ],
+  "outputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding/L3_embedding_ecfp.npz",
+      "exists": true,
+      "size_bytes": 8423031427
+    }
+  ],
+  "error": null,
+  "command": [
+    "/home/chenghua/miniconda3/envs/scidata/bin/python3.8",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/ChemDB/src/tools/build_L3_embedding_index.py",
+    "--tmp-dir",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp",
+    "--out-dir",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding",
+    "--backends",
+    "ecfp"
+  ],
+  "log_file": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/logs/build_l3_embedding_ecfp.log",
+  "finished_at": "2026-05-31T14:40:11.938996+00:00",
+  "duration_seconds": 289.556,
+  "exit_code": 0,
+  "output_check": {
+    "ok": true,
+    "missing": [],
+    "present": [
+      "data/L3_embedding/L3_embedding_ecfp.npz"
+    ],
+    "optional_missing": []
+  },
+  "paths_under_run_root": true
+}
+{
+  "step_id": "zscore_metal_embedding",
+  "status": "success",
+  "started_at": "2026-05-31T14:40:11.996965+00:00",
+  "run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "cwd": "/home/chenghua/ZhuoLi/ChemDBWebVersion/ChemDB",
+  "input_check": {
+    "ok": true,
+    "missing": [],
+    "checked": [
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features.csv"
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features.csv",
+      "exists": true,
+      "size_bytes": 22401
+    }
+  ],
+  "outputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features_zscore.csv",
+      "exists": true,
+      "size_bytes": 93702
+    }
+  ],
+  "error": null,
+  "command": [
+    "/home/chenghua/miniconda3/envs/scidata/bin/python3.8",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/ChemDB/data/metal_embedding/zscore_element_features.py",
+    "--input",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features.csv",
+    "--output",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features_zscore.csv"
+  ],
+  "log_file": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/logs/zscore_metal_embedding.log",
+  "finished_at": "2026-05-31T14:40:12.337174+00:00",
+  "duration_seconds": 0.34,
+  "exit_code": 0,
+  "output_check": {
+    "ok": true,
+    "missing": [],
+    "present": [
+      "data/metal_embedding/element_features_zscore.csv"
+    ],
+    "optional_missing": []
+  },
+  "paths_under_run_root": true
+}
+{
+  "step_id": "prepare_training_index",
+  "status": "success",
+  "started_at": "2026-05-31T14:40:12.379665+00:00",
+  "run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "cwd": "/home/chenghua/ZhuoLi/ChemDBWebVersion/ChemDB",
+  "input_check": {
+    "ok": true,
+    "missing": [],
+    "checked": [
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/step13_kl_nl_samples.csv",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/m_l3_pairs.csv",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/l3_gac.json",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding/L3_embedding_ecfp.npz",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features_zscore.csv"
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/step13_kl_nl_samples.csv",
+      "exists": true,
+      "size_bytes": 1916895
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/m_l3_pairs.csv",
+      "exists": true,
+      "size_bytes": 25862141
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/l3_gac.json",
+      "exists": true,
+      "size_bytes": 31304043
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding/L3_embedding_ecfp.npz",
+      "exists": true,
+      "size_bytes": 8423031427
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features_zscore.csv",
+      "exists": true,
+      "size_bytes": 93702
+    }
+  ],
+  "outputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/index.json",
+      "exists": true,
+      "size_bytes": 1544
+    }
+  ],
+  "error": null,
+  "command": [
+    "in_process:prepare_training_index"
+  ],
+  "in_process_result": {
+    "ok": true,
+    "index_path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/index.json",
+    "ligand_embedding": {
+      "backend": "ecfp",
+      "mode": null,
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding/L3_embedding_ecfp.npz",
+      "dir": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding",
+      "format": "npz",
+      "variants": {
+        "ecfp": {
+          "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding/L3_embedding_ecfp.npz",
+          "file": "L3_embedding_ecfp.npz"
+        }
+      },
+      "npz_keys": [
+        "dids",
+        "smiles",
+        "embeddings"
+      ]
+    }
+  },
+  "finished_at": "2026-05-31T14:40:12.381152+00:00",
+  "duration_seconds": 0.001,
+  "exit_code": 0,
+  "output_check": {
+    "ok": true,
+    "missing": [],
+    "present": [
+      "training/index.json"
+    ],
+    "optional_missing": []
+  },
+  "paths_under_run_root": true
+}
+{
+  "step_id": "prepare_training_config",
+  "status": "success",
+  "started_at": "2026-05-31T14:40:12.433983+00:00",
+  "run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "cwd": "/home/chenghua/ZhuoLi/ChemDBWebVersion/ChemDB",
+  "input_check": {
+    "ok": true,
+    "missing": [],
+    "checked": [
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/index.json"
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/index.json",
+      "exists": true,
+      "size_bytes": 1544
+    }
+  ],
+  "outputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/config.yaml",
+      "exists": true,
+      "size_bytes": 799
+    }
+  ],
+  "error": null,
+  "command": [
+    "in_process:prepare_training_config"
+  ],
+  "in_process_result": {
+    "ok": true,
+    "config_path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/config.yaml",
+    "integration": false
+  },
+  "finished_at": "2026-05-31T14:40:12.434759+00:00",
+  "duration_seconds": 0.001,
+  "exit_code": 0,
+  "output_check": {
+    "ok": true,
+    "missing": [],
+    "present": [
+      "training/config.yaml"
+    ],
+    "optional_missing": []
+  },
+  "paths_under_run_root": true
+}
+{
+  "step_id": "training_data",
+  "status": "success",
+  "started_at": "2026-05-31T14:40:12.488169+00:00",
+  "run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "cwd": "/home/chenghua/ZhuoLi/ChemDBWebVersion/ChemDB",
+  "input_check": {
+    "ok": true,
+    "missing": [],
+    "checked": [
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/index.json",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/step13_kl_nl_samples.csv",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/m_l3_pairs.csv",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding/L3_embedding_ecfp.npz",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features_zscore.csv"
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/index.json",
+      "exists": true,
+      "size_bytes": 1544
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/step13_kl_nl_samples.csv",
+      "exists": true,
+      "size_bytes": 1916895
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/tmp/m_l3_pairs.csv",
+      "exists": true,
+      "size_bytes": 25862141
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/L3_embedding/L3_embedding_ecfp.npz",
+      "exists": true,
+      "size_bytes": 8423031427
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/data/metal_embedding/element_features_zscore.csv",
+      "exists": true,
+      "size_bytes": 93702
+    }
+  ],
+  "outputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/split_index.json",
+      "exists": true,
+      "size_bytes": 8517139
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/train_records.pkl",
+      "exists": true,
+      "size_bytes": 286072
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/val_records.pkl",
+      "exists": true,
+      "size_bytes": 61329
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/test_records.pkl",
+      "exists": true,
+      "size_bytes": 82404
+    }
+  ],
+  "error": null,
+  "command": [
+    "/home/chenghua/miniconda3/envs/scidata/bin/python3.8",
+    "-m",
+    "training.data",
+    "--training-dir",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training",
+    "--index",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/index.json",
+    "--seed",
+    "42"
+  ],
+  "log_file": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/logs/training_data.log",
+  "finished_at": "2026-05-31T14:40:14.931542+00:00",
+  "duration_seconds": 2.443,
+  "exit_code": 0,
+  "output_check": {
+    "ok": true,
+    "missing": [],
+    "present": [
+      "training/split_index.json",
+      "training/train_records.pkl",
+      "training/val_records.pkl",
+      "training/test_records.pkl"
+    ],
+    "optional_missing": []
+  },
+  "paths_under_run_root": true
+}
+{
+  "step_id": "training_train",
+  "status": "success",
+  "started_at": "2026-05-31T14:40:14.991428+00:00",
+  "run_root": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1",
+  "cwd": "/home/chenghua/ZhuoLi/ChemDBWebVersion/ChemDB",
+  "input_check": {
+    "ok": true,
+    "missing": [],
+    "checked": [
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/config.yaml",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/train_records.pkl",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/val_records.pkl",
+      "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/test_records.pkl"
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/config.yaml",
+      "exists": true,
+      "size_bytes": 799
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/train_records.pkl",
+      "exists": true,
+      "size_bytes": 286072
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/val_records.pkl",
+      "exists": true,
+      "size_bytes": 61329
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/test_records.pkl",
+      "exists": true,
+      "size_bytes": 82404
+    }
+  ],
+  "outputs": [
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/ckpts/best.pt",
+      "exists": true,
+      "size_bytes": 236892252
+    },
+    {
+      "path": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/ckpts/history.json",
+      "exists": true,
+      "size_bytes": 2473
+    }
+  ],
+  "error": null,
+  "command": [
+    "/home/chenghua/miniconda3/envs/scidata/bin/python3.8",
+    "-m",
+    "training.train",
+    "--config",
+    "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/training/config.yaml"
+  ],
+  "log_file": "/home/chenghua/ZhuoLi/ChemDBWebVersion/workspace/projects/adam-pi/runs/1/logs/training_train.log",
+  "finished_at": "2026-05-31T14:40:39.425967+00:00",
+  "duration_seconds": 24.435,
+  "exit_code": 0,
+  "output_check": {
+    "ok": true,
+    "missing": [],
+    "present": [
+      "training/ckpts/best.pt",
+      "training/ckpts/history.json"
+    ],
+    "optional_missing": []
+  },
+  "paths_under_run_root": true
+}
+{
+  "ok": true,
+  "summary": {
+    "projects": 2,
+    "runs": 2,
+    "ga_sets": 2,
+    "tasks": 2,
+    "batches": 3,
+    "hyperparameter_sets": 0,
+    "errors": []
+  }
+}

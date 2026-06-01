@@ -11,7 +11,7 @@ workspace/model_after_results/**
 !workspace/model_after_results/.gitkeep
 !workspace/.gitkeep
 !workspace/projects/**/.gitkeep
-!workspace/model_after_tasks/**
+workspace/chemdb.sqlite
 
 __pycache__/
 *.pyc

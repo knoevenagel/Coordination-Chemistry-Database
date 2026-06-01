@@ -18,7 +18,8 @@ from typing import Any, Dict, List, Optional, Tuple
 from .run_context import RunContext
 
 WEB_ROOT = Path(__file__).resolve().parents[2]
-WORKSPACE_ROOT = WEB_ROOT / "workspace"
+DEFAULT_WORKSPACE_ROOT = WEB_ROOT / "workspace"
+WORKSPACE_ROOT = DEFAULT_WORKSPACE_ROOT
 GA_SETS_ROOT = WORKSPACE_ROOT / "ga_sets"
 CHEMDB_ROOT = WEB_ROOT / "ChemDB"
 STEP4_5_SCRIPT = CHEMDB_ROOT / "src" / "step4_5.py"
@@ -78,16 +79,31 @@ def _read_json(path: Path) -> Dict[str, Any]:
         return json.load(f)
 
 
-def ga_set_dir(ga_set_id: str) -> Path:
+def resolve_workspace_root(workspace_root: str | Path | None = None) -> Path:
+    if workspace_root is not None:
+        return Path(workspace_root).expanduser().resolve()
+    return WORKSPACE_ROOT.resolve()
+
+
+def ga_sets_root(workspace_root: str | Path | None = None) -> Path:
+    return resolve_workspace_root(workspace_root) / "ga_sets"
+
+
+def ga_set_dir(ga_set_id: str, *, workspace_root: str | Path | None = None) -> Path:
     if not GA_SET_ID_RE.match(ga_set_id):
         raise ValueError(f"invalid ga_set_id: {ga_set_id!r}")
-    return GA_SETS_ROOT / ga_set_id
+    return ga_sets_root(workspace_root) / ga_set_id
 
 
-def version_dir(ga_set_id: str, ga_version_id: str) -> Path:
+def version_dir(
+    ga_set_id: str,
+    ga_version_id: str,
+    *,
+    workspace_root: str | Path | None = None,
+) -> Path:
     if not VERSION_ID_RE.match(ga_version_id):
         raise ValueError(f"invalid ga_version_id: {ga_version_id!r} (expected v001, v002, ...)")
-    return ga_set_dir(ga_set_id) / "versions" / ga_version_id
+    return ga_set_dir(ga_set_id, workspace_root=workspace_root) / "versions" / ga_version_id
 
 
 def _canonicalize_smiles(smiles: str) -> str:
@@ -152,8 +168,8 @@ def materialize_ga_csv(source: Path, dest: Path) -> None:
         w.writerows(rows)
 
 
-def _next_version_id(ga_set_id: str) -> str:
-    versions_root = ga_set_dir(ga_set_id) / "versions"
+def _next_version_id(ga_set_id: str, *, workspace_root: str | Path | None = None) -> str:
+    versions_root = ga_set_dir(ga_set_id, workspace_root=workspace_root) / "versions"
     if not versions_root.is_dir():
         return "v001"
     nums = []
@@ -164,8 +180,8 @@ def _next_version_id(ga_set_id: str) -> str:
     return f"v{n:03d}"
 
 
-def _list_version_ids(ga_set_id: str) -> List[str]:
-    root = ga_set_dir(ga_set_id) / "versions"
+def _list_version_ids(ga_set_id: str, *, workspace_root: str | Path | None = None) -> List[str]:
+    root = ga_set_dir(ga_set_id, workspace_root=workspace_root) / "versions"
     if not root.is_dir():
         return []
     return sorted(p.name for p in root.iterdir() if p.is_dir() and VERSION_ID_RE.match(p.name))
@@ -239,8 +255,9 @@ def _write_ga_version_files(
     parent_version_id: Optional[str],
     source: Dict[str, Any],
     notes: str = "",
+    workspace_root: str | Path | None = None,
 ) -> Path:
-    vdir = version_dir(ga_set_id, ga_version_id)
+    vdir = version_dir(ga_set_id, ga_version_id, workspace_root=workspace_root)
     if vdir.exists():
         raise FileExistsError(f"version already exists: {vdir}")
     vdir.mkdir(parents=True, exist_ok=False)
@@ -268,8 +285,14 @@ def _write_ga_version_files(
     return csv_path
 
 
-def _ensure_ga_set_json(ga_set_id: str, *, source: Dict[str, Any], name: str = "") -> None:
-    sdir = ga_set_dir(ga_set_id)
+def _ensure_ga_set_json(
+    ga_set_id: str,
+    *,
+    source: Dict[str, Any],
+    name: str = "",
+    workspace_root: str | Path | None = None,
+) -> None:
+    sdir = ga_set_dir(ga_set_id, workspace_root=workspace_root)
     sdir.mkdir(parents=True, exist_ok=True)
     meta_path = sdir / "ga_set.json"
     now = _utc_now()
@@ -294,7 +317,11 @@ def _ensure_ga_set_json(ga_set_id: str, *, source: Dict[str, Any], name: str = "
         )
 
 
-def _collect_stale_files(ctx: RunContext) -> List[Dict[str, Any]]:
+def _collect_stale_files(
+    ctx: RunContext,
+    *,
+    workspace_root: str | Path | None = None,
+) -> List[Dict[str, Any]]:
     stale: List[Dict[str, Any]] = []
     for rel in STALE_DOWNSTREAM_REL:
         path = ctx.run_root / rel
@@ -306,7 +333,8 @@ def _collect_stale_files(ctx: RunContext) -> List[Dict[str, Any]]:
     for path in sorted((ctx.training_dir / "ckpts").glob("*.pt")) if (ctx.training_dir / "ckpts").is_dir() else []:
         rel = str(path.relative_to(ctx.run_root))
         stale.append({"path": rel, "exists": True, "reason": "downstream_of_ga"})
-    results_root = WORKSPACE_ROOT / "model_after_results"
+    ws_root = resolve_workspace_root(workspace_root)
+    results_root = ws_root / "model_after_results"
     run_s = str(ctx.run_root.resolve())
     if results_root.is_dir():
         for manifest in results_root.rglob("evaluate_model_manifest.json"):
@@ -315,10 +343,9 @@ def _collect_stale_files(ctx: RunContext) -> List[Dict[str, Any]]:
             except (json.JSONDecodeError, OSError):
                 continue
             if data.get("model_run_root") == run_s:
-                rel = str(manifest.relative_to(ctx.run_root.parent.parent))
                 stale.append(
                     {
-                        "path": str(manifest.relative_to(WORKSPACE_ROOT)),
+                        "path": str(manifest.relative_to(ws_root)),
                         "exists": True,
                         "reason": "model_after_results_for_run",
                     }
@@ -332,8 +359,9 @@ def _write_stale_report(
     trigger: str,
     previous: Optional[Dict[str, Any]],
     new_binding: Dict[str, Any],
+    workspace_root: str | Path | None = None,
 ) -> Optional[Path]:
-    stale_files = _collect_stale_files(ctx)
+    stale_files = _collect_stale_files(ctx, workspace_root=workspace_root)
     if not stale_files and previous is None:
         return None
     if previous and previous.get("checksum") == new_binding.get("checksum") and not stale_files:
@@ -420,6 +448,7 @@ def generate_ga_from_run(
     bind_to_run: bool = False,
     workers: Optional[int] = None,
     limit: int = -1,
+    workspace_root: str | Path | None = None,
 ) -> Dict[str, Any]:
     ctx = RunContext.from_run_root(run_root)
     repaired = ctx.tmp_dir / "repaired_ligand_data.csv"
@@ -428,11 +457,11 @@ def generate_ga_from_run(
 
     gid = ga_set_id or f"{ctx.run_root.name}_derived"
     if ga_version_id:
-        if version_dir(gid, ga_version_id).exists():
+        if version_dir(gid, ga_version_id, workspace_root=workspace_root).exists():
             raise FileExistsError(f"version exists: {gid}/{ga_version_id}")
         vid = ga_version_id
     else:
-        vid = _next_version_id(gid)
+        vid = _next_version_id(gid, workspace_root=workspace_root)
 
     work = ctx.tmp_dir / "_ga_generate_work"
     if work.exists():
@@ -454,11 +483,13 @@ def generate_ga_from_run(
         parent_version_id=None,
         source={"type": "from_run_generate_ga", "run_root": str(ctx.run_root.resolve())},
         notes="generate-ga-from-run",
+        workspace_root=workspace_root,
     )
     _ensure_ga_set_json(
         gid,
         source={"type": "from_run", "run_root": str(ctx.run_root.resolve())},
         name=gid,
+        workspace_root=workspace_root,
     )
     checksum, num_ga = ga_csv_checksum(csv_path)
 
@@ -470,7 +501,12 @@ def generate_ga_from_run(
         "num_ga": num_ga,
     }
     if bind_to_run:
-        result["bind"] = bind_ga_version_to_run(ctx.run_root, gid, vid)
+        result["bind"] = bind_ga_version_to_run(
+            ctx.run_root,
+            gid,
+            vid,
+            workspace_root=workspace_root,
+        )
     shutil.rmtree(work, ignore_errors=True)
     return result
 
@@ -480,9 +516,11 @@ def create_ga_version_from_csv(
     input_csv: str | Path,
     *,
     parent_version_id: Optional[str] = None,
+    workspace_root: str | Path | None = None,
 ) -> Dict[str, Any]:
-    if not ga_set_dir(ga_set_id).is_dir() and not (GA_SETS_ROOT / ga_set_id).exists():
-        _ensure_ga_set_json(ga_set_id, source={"type": "from_csv"}, name=ga_set_id)
+    sets_root = ga_sets_root(workspace_root)
+    if not ga_set_dir(ga_set_id, workspace_root=workspace_root).is_dir() and not (sets_root / ga_set_id).exists():
+        _ensure_ga_set_json(ga_set_id, source={"type": "from_csv"}, name=ga_set_id, workspace_root=workspace_root)
     src = Path(input_csv).resolve()
     if not src.is_file():
         raise FileNotFoundError(src)
@@ -492,7 +530,7 @@ def create_ga_version_from_csv(
             raise ValueError("input CSV must have GA_SMILES column")
         rows = list(reader)
     rows_norm = _normalize_ga_rows(rows, generate_missing_id=True)
-    vid = _next_version_id(ga_set_id)
+    vid = _next_version_id(ga_set_id, workspace_root=workspace_root)
     csv_path = _write_ga_version_files(
         ga_set_id,
         vid,
@@ -500,8 +538,68 @@ def create_ga_version_from_csv(
         parent_version_id=parent_version_id,
         source={"type": "from_csv", "input_csv": str(src)},
         notes="create-ga-version-from-csv",
+        workspace_root=workspace_root,
     )
-    _ensure_ga_set_json(ga_set_id, source={"type": "from_csv"}, name=ga_set_id)
+    _ensure_ga_set_json(ga_set_id, source={"type": "from_csv"}, name=ga_set_id, workspace_root=workspace_root)
+    checksum, num_ga = ga_csv_checksum(csv_path)
+    return {
+        "ga_set_id": ga_set_id,
+        "ga_version_id": vid,
+        "ga_csv": str(csv_path.resolve()),
+        "checksum": checksum,
+        "num_ga": num_ga,
+    }
+
+
+def create_ga_set_or_version_from_upload(
+    ga_set_id: str,
+    upload_content: bytes | str,
+    *,
+    parent_version_id: Optional[str] = None,
+    workspace_root: str | Path | None = None,
+) -> Dict[str, Any]:
+    """
+    Create a GA version from an uploaded CSV (strict mode).
+
+    Strict mode rules:
+    - CSV must contain GA_SMILES and GA_ID columns.
+    - Every non-empty row must include both GA_SMILES and GA_ID.
+    - Missing GA_ID is not auto-generated in this path.
+    """
+    if isinstance(upload_content, bytes):
+        text = upload_content.decode("utf-8")
+    else:
+        text = upload_content
+
+    reader = csv.DictReader(StringIO(text))
+    fieldnames = reader.fieldnames or []
+    if "GA_SMILES" not in fieldnames or "GA_ID" not in fieldnames:
+        raise ValueError("uploaded CSV must include GA_SMILES and GA_ID columns")
+
+    rows = list(reader)
+    for i, row in enumerate(rows, start=2):
+        smi = (row.get("GA_SMILES") or "").strip()
+        gid = (row.get("GA_ID") or "").strip()
+        if not smi and not gid:
+            continue
+        if not smi or not gid:
+            raise ValueError(f"row {i}: GA_SMILES and GA_ID are both required in strict upload mode")
+
+    rows_norm = _normalize_ga_rows(rows, generate_missing_id=False)
+    if not ga_set_dir(ga_set_id, workspace_root=workspace_root).is_dir():
+        _ensure_ga_set_json(ga_set_id, source={"type": "upload"}, name=ga_set_id, workspace_root=workspace_root)
+
+    vid = _next_version_id(ga_set_id, workspace_root=workspace_root)
+    csv_path = _write_ga_version_files(
+        ga_set_id,
+        vid,
+        rows_norm,
+        parent_version_id=parent_version_id,
+        source={"type": "upload"},
+        notes="create-ga-version-from-upload",
+        workspace_root=workspace_root,
+    )
+    _ensure_ga_set_json(ga_set_id, source={"type": "upload"}, name=ga_set_id, workspace_root=workspace_root)
     checksum, num_ga = ga_csv_checksum(csv_path)
     return {
         "ga_set_id": ga_set_id,
@@ -518,9 +616,10 @@ def bind_ga_version_to_run(
     ga_version_id: str,
     *,
     bound_by: str = "ga_registry_manager",
+    workspace_root: str | Path | None = None,
 ) -> Dict[str, Any]:
     ctx = RunContext.from_run_root(run_root)
-    src_csv = version_dir(ga_set_id, ga_version_id) / "GA_with_id.csv"
+    src_csv = version_dir(ga_set_id, ga_version_id, workspace_root=workspace_root) / "GA_with_id.csv"
     if not src_csv.is_file():
         raise FileNotFoundError(f"GA version not found: {src_csv}")
 
@@ -552,6 +651,7 @@ def bind_ga_version_to_run(
         trigger="bind-ga-version-to-run",
         previous=previous,
         new_binding=payload,
+        workspace_root=workspace_root,
     )
     out = dict(payload)
     if stale_path:
@@ -583,6 +683,14 @@ def apply_ga_to_run(
     return {"ok": True, "run_root": str(ctx.run_root.resolve())}
 
 
+def _add_workspace_root_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--workspace-root",
+        default=None,
+        help="Workspace root (default: repo workspace/). GA sets live under {workspace-root}/ga_sets/",
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="ChemDB workspace GA registry (Phase 1E)")
     sub = p.add_subparsers(dest="command", required=True)
@@ -594,27 +702,32 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--bind-to-run", action="store_true")
     g.add_argument("--workers", type=int, default=None)
     g.add_argument("--limit", type=int, default=-1)
+    _add_workspace_root_arg(g)
 
     c = sub.add_parser("create-ga-version-from-csv", help="New immutable GA version from CSV")
     c.add_argument("--ga-set-id", required=True)
     c.add_argument("--input-csv", required=True)
     c.add_argument("--parent-version-id", default=None)
+    _add_workspace_root_arg(c)
 
     b = sub.add_parser("bind-ga-version-to-run", help="Materialize GA version into run/tmp")
     b.add_argument("--run-root", required=True)
     b.add_argument("--ga-set-id", required=True)
     b.add_argument("--ga-version-id", required=True)
+    _add_workspace_root_arg(b)
 
     a = sub.add_parser("apply-ga-to-run", help="Run step4_5 apply-ga on bound run")
     a.add_argument("--run-root", required=True)
     a.add_argument("--workers", type=int, default=None)
     a.add_argument("--limit", type=int, default=-1)
+    _add_workspace_root_arg(a)
 
     return p
 
 
 def main(argv: Optional[List[str]] = None) -> int:
     args = build_parser().parse_args(argv)
+    ws = getattr(args, "workspace_root", None)
     try:
         if args.command == "generate-ga-from-run":
             out = generate_ga_from_run(
@@ -624,15 +737,22 @@ def main(argv: Optional[List[str]] = None) -> int:
                 bind_to_run=args.bind_to_run,
                 workers=args.workers,
                 limit=args.limit,
+                workspace_root=ws,
             )
         elif args.command == "create-ga-version-from-csv":
             out = create_ga_version_from_csv(
                 args.ga_set_id,
                 args.input_csv,
                 parent_version_id=args.parent_version_id,
+                workspace_root=ws,
             )
         elif args.command == "bind-ga-version-to-run":
-            out = bind_ga_version_to_run(args.run_root, args.ga_set_id, args.ga_version_id)
+            out = bind_ga_version_to_run(
+                args.run_root,
+                args.ga_set_id,
+                args.ga_version_id,
+                workspace_root=ws,
+            )
         elif args.command == "apply-ga-to-run":
             out = apply_ga_to_run(args.run_root, workers=args.workers, limit=args.limit)
         else:
