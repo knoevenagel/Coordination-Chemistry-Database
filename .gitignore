@@ -5,6 +5,9 @@ integration_data/pubchem_1pct/**/*.csv
 # Pytest
 .pytest_cache/
 
+# auditing files
+_auditing/
+
 # Local integration runs (optional)
 workspace/projects/**/runs/*
 workspace/model_after_results/**
@@ -15,4 +18,4 @@ workspace/chemdb.sqlite
 
 __pycache__/
 *.pyc
-*.pyo
+*.pyo_auditing/
